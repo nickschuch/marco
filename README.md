@@ -44,7 +44,7 @@ $ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 
 ```
 $ docker pull nickschuch/marco
-$ docker run nickschuch/marco
+$ docker run -d -p 0.0.0.0:80:80 -v /var/run/docker.sock:/var/run/docker.sock nickschuch/marco
 ```
 
 ### Why?
