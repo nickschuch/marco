@@ -24,7 +24,6 @@ func main() {
 func handler(p *httputil.ReverseProxy) func(http.ResponseWriter, *http.Request) {
         return func(w http.ResponseWriter, r *http.Request) {
                 log.Println(r.URL)
-                w.Header().Set("X-Ben", "Rad")
                 p.ServeHTTP(w, r)
         }
 }
