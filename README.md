@@ -19,19 +19,19 @@ The router will proxy these using the following hosts:
 
 ### How to run
 
-Build the binary with:
+**Build the binary with**
 
 ```
 $ go build marco.go
 ```
 
-Run the binary with:
+**Run the binary with**
 
 ```
 $ sudo ./marco
 ```
 
-Run with all the args:
+**Run with all the args**
 
 ```
 $ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
@@ -40,7 +40,7 @@ $ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 * ports - The Docker exposed ports that this proxy can use (in order).
 * endpoint - Connection to the Docker daemon.
 
-Run inside a Docker container:
+**Run inside a Docker container**
 
 ```
 $ docker pull nickschuch/marco
