@@ -2,7 +2,7 @@ package main
 
 import (
     "flag"
-    "log"
+    log "github.com/Sirupsen/logrus"
     "strings"
     "net/url"
     "net/http"
@@ -26,7 +26,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
     docker, _ := dockerclient.NewDockerClient(endpoint, nil)
     container, err := docker.InspectContainer(name)
     if err != nil {
-        log.Fatal(err)
+        log.WithFields(log.Fields{
+            "container": name,
+            "path": r.URL,
+        }).Fatal(err)
     }
 
     // Query Docker for the IP of the container.
@@ -35,7 +38,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
     //   * What happens when we don't have an IP.
     ip := container.NetworkSettings.IpAddress
     if err != nil {
-        log.Fatal(err)
+        log.WithFields(log.Fields{
+            "container": name,
+            "path": r.URL,
+        }).Fatal(err)
     }
 
     // The first port available via the "ports" argument.
@@ -60,9 +66,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
     // Todo:
     //   * Cache the final proxy so we don't have to compute it on every request.
     //   * Logging.
-    remote, err := url.Parse("http://" + ip + ":" + port)
+    proxy_url := "http://" + ip + ":" + port
+
+    log.WithFields(log.Fields{
+        "container": name,
+        "path": r.URL,
+        "cache": "MISS",
+    }).Info("Connecting to: " + proxy_url)
+
+    remote, err := url.Parse(proxy_url)
     if err != nil {
-       panic(err)
+        panic(err)
     } 
     proxy := httputil.NewSingleHostReverseProxy(remote)
     proxy.ServeHTTP(w, r)
