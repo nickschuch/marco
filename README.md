@@ -5,9 +5,17 @@ A simple proxy for Docker containers.
 
 ![Overview](/docs/overview.png "Overview")
 
+### Roadmap
+
+* Test suite
+** Unit tests
+** Functional tests
+* Logging
+* Error handling
+
 ### Example
 
-Running on the domain example.com
+Running on the domain **example.com**
 
 I have the containers named:
 * **container1** - HTTP exposed on port 80
