@@ -40,6 +40,13 @@ $ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 * ports - The Docker exposed ports that this proxy can use (in order).
 * endpoint - Connection to the Docker daemon.
 
+Run inside a Docker container:
+
+```
+$ docker pull nickschuch/marco
+$ docker run nickschuch/marco
+```
+
 ### Why?
 
 I created this proxy for 2 reasons.
