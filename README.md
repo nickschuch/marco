@@ -57,5 +57,6 @@ I will post a video very soon...
 * Test suite
   * Unit tests
   * Functional tests
+* Http auth (maybe)
 * Logging
 * Error handling
