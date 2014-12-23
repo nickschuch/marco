@@ -10,6 +10,7 @@ import (
     "github.com/samalba/dockerclient"
 )
 
+var bind string
 var endpoint string
 var ports string
 
@@ -51,7 +52,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
     //
     // Todo:
     //   * What happens when we don't have a port?
-    //   * Logging.
     port := ""
     for exposed := range container.NetworkSettings.Ports {
         p := strings.Split(exposed, "/")
@@ -65,7 +65,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
     //
     // Todo:
     //   * Cache the final proxy so we don't have to compute it on every request.
-    //   * Logging.
     proxy_url := "http://" + ip + ":" + port
 
     log.WithFields(log.Fields{
@@ -83,11 +82,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+    flag.StringVar(&bind, "bind", "80", "Server traffic through the following port")
     flag.StringVar(&endpoint, "endpoint", "unix:///var/run/docker.sock", "The Docker API endpoint eg. tcp://localhost:2375")
     flag.StringVar(&ports, "ports", "80,8080,2368,8983", "The ports you wish to proxy. Ordered in preference eg. 80,2368,8983")
     flag.Parse()
 
     http.HandleFunc("/", handler)
-    // @todo, Make this an option.
-    http.ListenAndServe(":80", nil)
+    http.ListenAndServe(":" + bind, nil)
 }

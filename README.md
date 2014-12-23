@@ -34,9 +34,10 @@ $ sudo ./marco
 **Run with all the args**
 
 ```
-$ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
+$ sudo ./marco -bind=8080 -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 ```
 
+* bind - Server traffic through the following port.
 * ports - The Docker exposed ports that this proxy can use (in order).
 * endpoint - Connection to the Docker daemon.
 
