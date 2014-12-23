@@ -10,12 +10,12 @@ A simple proxy for Docker containers.
 Running on the domain example.com
 
 I have the containers named:
-* container1 - HTTP exposed on port 80
-* container2 - HTTP exposed on port 8983
+* **container1** - HTTP exposed on port 80
+* **container2** - HTTP exposed on port 8983
 
 The router will proxy these using the following hosts:
-* container1.example.com
-* container2.example.com
+* **container1.example.com**
+* **container2.example.com**
 
 ### How to run
 
@@ -42,8 +42,11 @@ $ sudo ./marco -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 
 ### Why?
 
+I created this proxy for 2 reasons.
+* To be able to implement this on a local development host with multiple containers.
+* So loadbalancers don't have to be on the same network as the other Docker containers.
 
-
+![Why](/docs/why.png "Why")
 
 ### Demo
 
