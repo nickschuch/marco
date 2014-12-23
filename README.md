@@ -5,14 +5,6 @@ A simple proxy for Docker containers.
 
 ![Overview](/docs/overview.png "Overview")
 
-### Roadmap
-
-* Test suite
-** Unit tests
-** Functional tests
-* Logging
-* Error handling
-
 ### Example
 
 Running on the domain **example.com**
@@ -59,3 +51,11 @@ I created this proxy for 2 reasons.
 ### Demo
 
 I will post a video very soon...
+
+### Roadmap
+
+* Test suite
+  * Unit tests
+  * Functional tests
+* Logging
+* Error handling
