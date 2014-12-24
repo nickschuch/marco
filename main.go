@@ -2,26 +2,34 @@ package main
 
 import (
     "flag"
+    "time"
     log "github.com/Sirupsen/logrus"
     "strings"
     "net/url"
     "net/http"
     "net/http/httputil"
     "github.com/samalba/dockerclient"
+    "github.com/pmylund/go-cache"
 )
 
 var bind string
 var endpoint string
 var ports string
 
-func handler(w http.ResponseWriter, r *http.Request) {
-    // Get the name of the container based on the domain sent to this proxy.
-    // eg. project1.example.com = project1
-    //
-    // Todo:
-    //   * What happens when we don't have a subdomain provided.
-    s := strings.Split(r.Host, ".")
-    name := s[0]
+var c = cache.New(5*time.Minute, 30*time.Second)
+
+func getProxy(name string, r *http.Request) string {
+    if x, found := c.Get(name); found {
+        proxy_url := x.(string)
+
+        log.WithFields(log.Fields{
+            "container": name,
+            "path": r.URL,
+            "cache": "HIT",
+        }).Info("Connecting to: " + proxy_url)
+
+        return proxy_url
+    }
 
     // Connect to the Docker daemon with the flag.
     docker, _ := dockerclient.NewDockerClient(endpoint, nil)
@@ -62,10 +70,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Proxy through to the container.
-    //
-    // Todo:
-    //   * Cache the final proxy so we don't have to compute it on every request.
     proxy_url := "http://" + ip + ":" + port
+    c.Set(name, proxy_url, cache.DefaultExpiration)
 
     log.WithFields(log.Fields{
         "container": name,
@@ -73,6 +79,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
         "cache": "MISS",
     }).Info("Connecting to: " + proxy_url)
 
+    return proxy_url
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    // Get the name of the container based on the domain sent to this proxy.
+    // eg. project1.example.com = project1
+    //
+    // Todo:
+    //   * What happens when we don't have a subdomain provided.
+    s := strings.Split(r.Host, ".")
+    name := s[0]
+
+    proxy_url := getProxy(name, r)
     remote, err := url.Parse(proxy_url)
     if err != nil {
         panic(err)
