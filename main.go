@@ -94,7 +94,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
     proxy_url := getProxy(name, r)
     remote, err := url.Parse(proxy_url)
     if err != nil {
-        panic(err)
+        log.WithFields(log.Fields{
+            "container": name,
+            "path": r.URL,
+        }).Fatal(err)
     } 
     proxy := httputil.NewSingleHostReverseProxy(remote)
     proxy.ServeHTTP(w, r)
