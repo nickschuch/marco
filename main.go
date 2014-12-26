@@ -13,22 +13,49 @@ import (
 )
 
 var bind string
+var host string
 var endpoint string
 var ports string
 
 var c = cache.New(5*time.Minute, 30*time.Second)
 
+func getPort(exposed string) string {
+    port := strings.Split(exposed, "/")
+    return port[0]
+}
+
+func buildProxyUrl(binding []dockerclient.PortBinding) string {
+    // Ensure we have PortBinding values to build against.
+    if len(binding) <= 0 {
+        return ""
+    }
+
+    // Handle IP 0.0.0.0 the same way Swarm does. We replace this with an IP
+    // that uses a local context.
+    // @todo, Add the logic.
+    ip := binding[0].HostIp
+    port := binding[0].HostPort
+
+    if ip == "0.0.0.0" {
+        ip = host
+    }
+
+    return "http://" + ip + ":" + port
+}
+
 func getProxy(name string, r *http.Request) string {
+    var builtUrl string
+
     if x, found := c.Get(name); found {
-        proxy_url := x.(string)
+        builtUrl = x.(string)
 
         log.WithFields(log.Fields{
             "container": name,
             "path": r.URL,
             "cache": "HIT",
-        }).Info("Connecting to: " + proxy_url)
+        }).Info("Connecting to: " + builtUrl)
 
-        return proxy_url
+        return builtUrl
     }
 
     // Connect to the Docker daemon with the flag.
@@ -41,45 +68,29 @@ func getProxy(name string, r *http.Request) string {
         }).Fatal(err)
     }
 
-    // Query Docker for the IP of the container.
-    //
-    // Todo:
-    //   * What happens when we don't have an IP.
-    ip := container.NetworkSettings.IpAddress
-    if err != nil {
-        log.WithFields(log.Fields{
-            "container": name,
-            "path": r.URL,
-        }).Fatal(err)
-    }
-
-    // The first port available via the "ports" argument.
-    // eg. When using the default ports flag value.
-    //     If the port exposes 8080 and 2368 than it will
-    //     be 8080.
-    //
-    // Todo:
-    //   * What happens when we don't have a port?
-    port := ""
-    for exposed := range container.NetworkSettings.Ports {
-        p := strings.Split(exposed, "/")
-        if strings.Contains(ports, p[0]) {
-            port = p[0]
+    // Here we build the proxy URL based on the exposed values provided
+    // by NetworkSettings. If a container has not been exposed, it will
+    // not work.
+    for portString, portObject := range container.NetworkSettings.Ports {
+        port := getPort(portString)
+        if strings.Contains(ports, port) {
+            builtUrl = buildProxyUrl(portObject)
             break
         }
     }
 
-    // Proxy through to the container.
-    proxy_url := "http://" + ip + ":" + port
-    c.Set(name, proxy_url, cache.DefaultExpiration)
+    // Cache the value for later. This ensures that we don't have to
+    // query the Docker daemon on every page request.
+    c.Set(name, builtUrl, cache.DefaultExpiration)
 
+    // Ensure we can debug this later on.
     log.WithFields(log.Fields{
         "container": name,
         "path": r.URL,
         "cache": "MISS",
-    }).Info("Connecting to: " + proxy_url)
+    }).Info("Connecting to: " + builtUrl)
 
-    return proxy_url
+    return builtUrl
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -91,8 +102,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
     s := strings.Split(r.Host, ".")
     name := s[0]
 
-    proxy_url := getProxy(name, r)
-    remote, err := url.Parse(proxy_url)
+    proxyUrl := getProxy(name, r)
+    remote, err := url.Parse(proxyUrl)
     if err != nil {
         log.WithFields(log.Fields{
             "container": name,
@@ -105,6 +116,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
     flag.StringVar(&bind, "bind", "80", "Server traffic through the following port")
+    flag.StringVar(&host, "host", "172.17.42.1", "The IP or DNS of the host exposing ports.")
     flag.StringVar(&endpoint, "endpoint", "unix:///var/run/docker.sock", "The Docker API endpoint eg. tcp://localhost:2375")
     flag.StringVar(&ports, "ports", "80,8080,2368,8983", "The ports you wish to proxy. Ordered in preference eg. 80,2368,8983")
     flag.Parse()
