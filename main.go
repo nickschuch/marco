@@ -2,128 +2,28 @@ package main
 
 import (
     "flag"
-    "time"
     log "github.com/Sirupsen/logrus"
-    "strings"
     "net/url"
     "net/http"
     "net/http/httputil"
     "runtime"
     "math/rand"
     "github.com/samalba/dockerclient"
-    "github.com/pmylund/go-cache"
 )
 
+// Flags passed in via the commandline.
 var bind string
 var host string
 var endpoint string
 var ports string
 
-var c = cache.New(5*time.Minute, 30*time.Second)
-
-// Helper function to get a value of a Docker container ENV.
-func getContainerEnv(key string, envs []string) string {
-    for _, env := range envs {
-        if strings.Contains(env, key) {
-            envValue := strings.Split(env, "=")
-            return envValue[1]
-        }
-    }
-    return ""
-}
-
-// Helper function to convert "2365/tcp" into "2365".
-func getPort(exposed string) string {
-    port := strings.Split(exposed, "/")
-    return port[0]
-}
-
-// Converts the Docker HostIP and HostPort details into a single
-// string that we can use for proxy connections.
-func buildProxyUrl(binding []dockerclient.PortBinding) string {
-    // Ensure we have PortBinding values to build against.
-    if len(binding) <= 0 {
-        return ""
-    }
-
-    // Handle IP 0.0.0.0 the same way Swarm does. We replace this with an IP
-    // that uses a local context.
-    // @todo, Add the logic.
-    ip := binding[0].HostIp
-    port := binding[0].HostPort
-
-    if ip == "0.0.0.0" {
-        ip = host
-    }
-
-    return "http://" + ip + ":" + port
-}
-
-// Build up a list of proxy urls so we can load balance against them.
-func getProxyUrls(domain string, r *http.Request) []string {
-    var builtUrls []string
-
-    // Return the cached response if we already have one.
-    if x, found := c.Get(domain); found {
-        builtUrls = x.([]string)
-        return builtUrls
-    }
-
-    // Connect to the Docker daemon with the flag.
-    docker, _ := dockerclient.NewDockerClient(endpoint, nil)
-    containers, err := docker.ListContainers(false, false, "")
-    if err != nil {
-        log.Fatal(err)
-    }
-    for _, c := range containers {
-        // We compare the name of the container against the subdomain of the request.
-        // eg. project = all the containers with the name "project".
-        container, _ := docker.InspectContainer(c.Id)
-
-        // We need to check if a Domain has been set in the environment variables of the container.
-        envDomain := getContainerEnv("DOMAIN", container.Config.Env)
-        if envDomain == "" {
-            log.WithFields(log.Fields{
-              "host": r.Host,
-              "uri": r.URL,
-              "method": r.Method,
-            }).Info("Could not find domain ENV value assigned to: " + container.Name)
-            continue
-        }
-
-        // Don't include in the pool if this container's domain ENV value does not match.
-        if envDomain != domain {
-            continue
-        }
-
-        // Here we build the proxy URL based on the exposed values provided
-        // by NetworkSettings. If a container has not been exposed, it will
-        // not work.
-        for portString, portObject := range container.NetworkSettings.Ports {
-            port := getPort(portString)
-            if strings.Contains(ports, port) {
-                builtUrl := buildProxyUrl(portObject)
-                if builtUrl != "" {
-                    builtUrls = append(builtUrls, builtUrl)
-                }
-            }
-        }
-    }
-
-    // Cache the value for later. This ensures that we don't have to
-    // query the Docker daemon on every page request.
-    c.Set(domain, builtUrls, cache.DefaultExpiration)
-
-    return builtUrls
-}
-
 // This is the callback for the HTTP server.
-func handler(w http.ResponseWriter, r *http.Request) {
+func proxyCallback(w http.ResponseWriter, r *http.Request) {
     // Get a list of URL's that we can proxy this connection through to.
     //
     // Todo:
     //   * Make this pluggable so we can have different type of container discovery.
-    proxyUrls := getProxyUrls(r.Host, r)
+    proxyUrls := getProxies(r.Host)
     if len(proxyUrls) <= 0 {
         return
     }
@@ -151,6 +51,38 @@ func handler(w http.ResponseWriter, r *http.Request) {
     proxy.ServeHTTP(w, r)
 }
 
+// Callback used to listen to Docker's events
+func eventCallback(event *dockerclient.Event, args ...interface{}) {
+    statesRemove := []string {
+        "die",
+        "stop",
+        "destroy",
+    }
+    statesAdd := []string {
+        "start",
+    }
+
+    if stringInSlice(event.Status, statesRemove) {
+        container := getContainer(event.Id)
+        removeProxy(container.Domain, container.Url)
+        log.WithFields(log.Fields{
+          "event": event.Status,
+        }).Info("Removed container " + container.Domain + " (" + event.Id + ") out of rotation.")
+
+        // Only remove the container when we destroy it.
+        if event.Status == "destroy" {
+            removeContainer(event.Id)
+        }
+    }
+    if stringInSlice(event.Status, statesAdd) {
+        container := getContainer(event.Id)
+        addProxy(container.Domain, container.Url)
+        log.WithFields(log.Fields{
+          "event": event.Status,
+        }).Info("Added container " + container.Domain + " (" + event.Id + ") into rotation.")
+    }
+}
+
 // Run at the time of execution.
 func main() {
     // This allows us to serve more than a single request at a time.
@@ -163,7 +95,16 @@ func main() {
     flag.StringVar(&ports, "ports", "80,8080,2368,8983", "The ports you wish to proxy. Ordered in preference eg. 80,2368,8983")
     flag.Parse()
 
+    // Get the Docker client that we can resuse for building a Proxy URL list
+    // as well as monitor events.
+    dockerClient := getDockerClient()
+    dockerClient.StartMonitorEvents(eventCallback)
+
+    // Build a cached copy of the containers and the urls that they
+    // can be proxied to.
+    populateCache()
+
     // Register and run.
-    http.HandleFunc("/", handler)
+    http.HandleFunc("/", proxyCallback)
     http.ListenAndServe(":" + bind, nil)
 }
