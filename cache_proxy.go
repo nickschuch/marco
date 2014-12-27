@@ -31,7 +31,7 @@ func removeProxy(domain string, url string) {
     var newUrls []string
     for _, u := range urls {
         if u != url {
-            newUrls = append(newUrls, url)
+            newUrls = append(newUrls, u)
         }
     }
     cacheProxies.Set(domain, newUrls, cache.NoExpiration)

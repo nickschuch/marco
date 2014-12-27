@@ -11,47 +11,11 @@ import (
     "github.com/samalba/dockerclient"
 )
 
-// Flags passed in via the commandline.
 var bind string
 var host string
 var endpoint string
 var ports string
 
-// This is the callback for the HTTP server.
-func proxyCallback(w http.ResponseWriter, r *http.Request) {
-    // Get a list of URL's that we can proxy this connection through to.
-    //
-    // Todo:
-    //   * Make this pluggable so we can have different type of container discovery.
-    proxyUrls := getProxies(r.Host)
-    if len(proxyUrls) <= 0 {
-        return
-    }
-
-    // Here is implement a basic random load balancer.
-    //
-    // Todo:
-    //   * Make this pluggable (custom load balancer).
-    proxyUrl := proxyUrls[rand.Intn(len(proxyUrls))]
-
-    // Ensure we keep a log of the connection so we can go back and
-    // debug if anything goes wrong.
-    log.WithFields(log.Fields{
-      "host": r.Host,
-      "uri": r.URL,
-      "method": r.Method,
-    }).Info("Proxy to: " + proxyUrl)
-
-    // Proxy the connection through.
-    remote, err := url.Parse(proxyUrl)
-    if err != nil {
-        log.Fatal(err)
-    } 
-    proxy := httputil.NewSingleHostReverseProxy(remote)
-    proxy.ServeHTTP(w, r)
-}
-
-// Callback used to listen to Docker's events
 func eventCallback(event *dockerclient.Event, args ...interface{}) {
     statesRemove := []string {
         "die",
@@ -83,7 +47,40 @@ func eventCallback(event *dockerclient.Event, args ...interface{}) {
     }
 }
 
-// Run at the time of execution.
+func proxyCallback(w http.ResponseWriter, r *http.Request) {
+    // Get a list of URL's that we can proxy this connection through to.
+    //
+    // Todo:
+    //   * Make this pluggable so we can have different type of container discovery.
+    proxyUrls := getProxies(r.Host)
+    if len(proxyUrls) <= 0 {
+        return
+    }
+
+    // Here is implement a basic random load balancer.
+    //
+    // Todo:
+    //   * Make this pluggable (custom load balancer).
+    proxyUrl := proxyUrls[rand.Intn(len(proxyUrls))]
+    log.Info(proxyUrls)
+
+    // Ensure we keep a log of the connection so we can go back and
+    // debug if anything goes wrong.
+    log.WithFields(log.Fields{
+      "host": r.Host,
+      "uri": r.URL,
+      "method": r.Method,
+    }).Info("Proxy to: " + proxyUrl)
+
+    // Proxy the connection through.
+    remote, err := url.Parse(proxyUrl)
+    if err != nil {
+        log.Fatal(err)
+    } 
+    proxy := httputil.NewSingleHostReverseProxy(remote)
+    proxy.ServeHTTP(w, r)
+}
+
 func main() {
     // This allows us to serve more than a single request at a time.
     runtime.GOMAXPROCS(runtime.NumCPU())
