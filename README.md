@@ -23,8 +23,8 @@ I have the containers:
   * Environment variable DOMAIN set to _www.baz.com_
 
 This proxy will setup the following routes:
-* A "random" load balanced connection between _container1_ and _container2_
-* A proxy connection to _container3_
+* A "random" load balanced connection between _container1_ and _container2_ on the domain www.example.com
+* A proxy connection to _container3_ on the domain www.foobar.com
 * No proxy connection will be setup for _container4_ given it doesn't have a DOMAIN environment variable set.
 * No proxy connection will be setup for _container5_ given it doesn't have a Port exposedt.
 
