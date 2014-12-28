@@ -51,8 +51,8 @@ $ docker run -d -p 0.0.0.0:80:80 -v /var/run/docker.sock:/var/run/docker.sock ni
 ### Why?
 
 I created this proxy for 2 reasons.
-* To be able to implement this on a local development host with multiple containers.
-* So loadbalancers don't have to be on the same network as the other Docker containers.
+* Local development with more than one container that needs to run on a single HTTP port (eg. 80)
+* Load balance across multiple hosts with containers ready to serve a single site. Powered by Docker Swarm.
 
 ![Why](/docs/why.png "Why")
 
