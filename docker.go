@@ -35,7 +35,7 @@ func getPort(exposed string) string {
     return port[0]
 }
 
-func buildProxyUrl(binding []dockerclient.PortBinding) string {
+func getProxyUrl(binding []dockerclient.PortBinding) string {
     // Ensure we have PortBinding values to build against.
     if len(binding) <= 0 {
         return ""
@@ -45,10 +45,14 @@ func buildProxyUrl(binding []dockerclient.PortBinding) string {
     // that uses a local context.
     ip := binding[0].HostIp
     port := binding[0].HostPort
+    url := buildProxyUrl(ip, port)
+    
+    return url
+}
 
-    if ip == "0.0.0.0" {
+func buildProxyUrl(ip string, port string) string {
+	if ip == "0.0.0.0" {
         ip = host
     }
-
     return "http://" + ip + ":" + port
 }
