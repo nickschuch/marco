@@ -12,13 +12,21 @@ type cacheContainerObject struct {
 
 var cacheContainers = cache.New(cache.NoExpiration, cache.NoExpiration)
 
-func getContainer(id string) cacheContainerObject {
-    var container cacheContainerObject
-    if x, found := cacheContainers.Get(id); found {
+func getCachedContainer(id string) cacheContainerObject {
+	var container cacheContainerObject
+	if x, found := cacheContainers.Get(id); found {
         container = x.(cacheContainerObject)
+    }
+    return container
+}
+
+func getContainer(id string) cacheContainerObject {
+    container := getCachedContainer(id)
+    if len(container.Domain) > 0 {
+       return container
     } else {
     	dockerContainer := getDockerContainer(id)
- 
+
  		// Get the domain so we can work out which site this container belong to.
     	envDomain := getContainerEnv("DOMAIN", dockerContainer.Config.Env)
 
@@ -32,7 +40,7 @@ func getContainer(id string) cacheContainerObject {
         for portString, portObject := range dockerContainer.NetworkSettings.Ports {
             port := getPort(portString)
             if strings.Contains(ports, port) {
-                url = buildProxyUrl(portObject)
+                url = getProxyUrl(portObject)
             }
         }
         container = addContainer(id, envDomain, url)

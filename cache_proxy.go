@@ -21,12 +21,26 @@ func setProxies(domain string, urls []string) {
 }
 
 func addProxy(domain string, url string) {
+    if domain == "" {
+        return
+    }
+    if url == "" {
+        return
+    }
+
 	urls := getProxies(domain)
 	urls = append(urls, url)
 	cacheProxies.Set(domain, urls, cache.NoExpiration)
 }
 
 func removeProxy(domain string, url string) {
+	if domain == "" {
+        return
+    }
+    if url == "" {
+        return
+    }
+
     urls := getProxies(domain)
     var newUrls []string
     for _, u := range urls {
