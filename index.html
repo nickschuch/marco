@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Marco by nickschuch</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Marco</h1>
+        <h2>A reverse proxy written in Go. Uses the Docker REST API as a dynamic backend.</h2>
+        <a href="https://github.com/nickschuch/marco" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <p><img src="https://raw.githubusercontent.com/nickschuch/marco/master/docs/overview.png" alt="Overview" title="Overview"></p>
+
+<h3>
+<a id="why" class="anchor" href="#why" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why?</h3>
+
+<p>I created this proxy for 2 reasons.</p>
+
+<ul>
+<li>Local development with more than one container that needs to run on a single HTTP port (eg. 80)</li>
+<li>Load balance across multiple hosts with containers ready to serve a single site. Powered by Docker Swarm.</li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/nickschuch/marco/master/docs/why.png" alt="Why" title="Why"></p>
+
+<h3>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h3>
+
+<p>I have the containers:</p>
+
+<ul>
+<li>
+<strong>container1</strong>
+
+<ul>
+<li>Port 80 exposed</li>
+<li>Environment variable DOMAIN set to <em><a href="http://www.example.com">www.example.com</a></em>
+</li>
+</ul>
+</li>
+<li>
+<strong>container2</strong>
+
+<ul>
+<li>Port 80 exposed</li>
+<li>Environment variable DOMAIN set to <em><a href="http://www.example.com">www.example.com</a></em>
+</li>
+</ul>
+</li>
+<li>
+<strong>container3</strong>
+
+<ul>
+<li>Port 8983 exposed</li>
+<li>Environment variable DOMAIN set to <em><a href="http://www.foobar.com">www.foobar.com</a></em>
+</li>
+</ul>
+</li>
+<li>
+<strong>container4</strong>
+
+<ul>
+<li>Port 80 exposed</li>
+</ul>
+</li>
+<li>
+<strong>container5</strong>
+
+<ul>
+<li>Environment variable DOMAIN set to <em><a href="http://www.baz.com">www.baz.com</a></em>
+</li>
+</ul>
+</li>
+</ul>
+
+<p>This proxy will setup the following routes:</p>
+
+<ul>
+<li>A "random" load balanced connection between <em>container1</em> and <em>container2</em>
+</li>
+<li>A proxy connection to <em>container3</em>
+</li>
+<li>No proxy connection will be setup for <em>container4</em> given it doesn't have a DOMAIN environment variable set.</li>
+<li>No proxy connection will be setup for <em>container5</em> given it doesn't have a Port exposedt.</li>
+</ul>
+
+<h3>
+<a id="how-to-run" class="anchor" href="#how-to-run" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to run</h3>
+
+<p><strong>Build the binary with</strong></p>
+
+<pre><code>$ go build marco.go
+</code></pre>
+
+<p><strong>Run the binary with</strong></p>
+
+<pre><code>$ sudo ./marco
+</code></pre>
+
+<p><strong>Run with all the args</strong></p>
+
+<pre><code>$ sudo ./marco -bind=8080 -ports=80,8983,8080 -endpoint=tcp://localhost:2375
+</code></pre>
+
+<ul>
+<li>bind - Server traffic through the following port.</li>
+<li>ports - The Docker exposed ports that this proxy can use (in order).</li>
+<li>endpoint - Connection to the Docker daemon.</li>
+</ul>
+
+<p><strong>Run inside a Docker container</strong></p>
+
+<pre><code>$ docker pull nickschuch/marco
+$ docker run -d -p 0.0.0.0:80:80 -v /var/run/docker.sock:/var/run/docker.sock nickschuch/marco
+</code></pre>
+
+<h3>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Demo</h3>
+
+<p><em>I will post a video very soon...</em></p>
+
+<h3>
+<a id="roadmap" class="anchor" href="#roadmap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roadmap</h3>
+
+<ul>
+<li>Http auth (maybe)</li>
+<li>Logging</li>
+<li>Error handling</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/nickschuch/marco/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/nickschuch/marco/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/nickschuch/marco"></a> is maintained by <a href="https://github.com/nickschuch">nickschuch</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
