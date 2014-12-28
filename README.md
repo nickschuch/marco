@@ -1,4 +1,4 @@
-Marco
+Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco)
 =====
 
 A simple proxy for Docker containers.
@@ -7,15 +7,26 @@ A simple proxy for Docker containers.
 
 ### Example
 
-Running on the domain **example.com**
+I have the containers:
+* **container1**
+  * Port 80 exposed
+  * Environment variable DOMAIN set to _www.example.com_
+* **container2**
+  * Port 80 exposed
+  * Environment variable DOMAIN set to _www.example.com_
+* **container3**
+  * Port 8983 exposed
+  * Environment variable DOMAIN set to _www.foobar.com_
+* **container4**
+  * Port 80 exposed
+* **container5**
+  * Environment variable DOMAIN set to _www.baz.com_
 
-I have the containers named:
-* **container1** - HTTP exposed on port 80
-* **container2** - HTTP exposed on port 8983
-
-The router will proxy these using the following hosts:
-* **container1.example.com**
-* **container2.example.com**
+This proxy will setup the following routes:
+* A "random" load balanced connection between _container1_ and _container2_
+* A proxy connection to _container3_
+* No proxy connection will be setup for _container4_ given it doesn't have a DOMAIN environment variable set.
+* No proxy connection will be setup for _container5_ given it doesn't have a Port exposedt.
 
 ### How to run
 
@@ -62,9 +73,6 @@ _I will post a video very soon..._
 
 ### Roadmap
 
-* Test suite
-  * Unit tests
-  * Functional tests
 * Http auth (maybe)
 * Logging
 * Error handling
