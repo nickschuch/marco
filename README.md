@@ -35,7 +35,7 @@ This proxy will setup the following routes:
 **Build the binary with**
 
 ```
-$ go build marco.go
+$ go build
 ```
 
 **Run the binary with**
