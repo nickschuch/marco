@@ -92,5 +92,4 @@ alt="Marco - demo " width="240" height="180" border="10" /></a>
 ### Roadmap
 
 * Http auth (maybe)
-* Logging
-* Error handling
+* Pluggable load balancers
