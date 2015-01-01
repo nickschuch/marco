@@ -85,7 +85,7 @@ I created this proxy for 2 reasons.
 
 ### Demo
 
-_I will post a video very soon..._
+[![Demonstration](http://img.youtube.com/vi/xHNXsfg3lL4/0.jpg)](http://youtu.be/xHNXsfg3lL4)
 
 ### Roadmap
 
