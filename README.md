@@ -85,7 +85,7 @@ I created this proxy for 2 reasons.
 
 ### Demo
 
-[![Demonstration](http://img.youtube.com/vi/2pzwmtCeSyQ/0.jpg)](http://www.youtube.com/watch?v=2pzwmtCeSyQ)
+<iframe width="560" height="315" src="//www.youtube.com/embed/2pzwmtCeSyQ" frameborder="0" allowfullscreen></iframe>
 
 ### Roadmap
 
