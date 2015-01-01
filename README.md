@@ -28,7 +28,9 @@ This proxy will setup the following routes:
 * No proxy connection will be setup for _container4_ given it doesn't have a DOMAIN environment variable set.
 * No proxy connection will be setup for _container5_ given it doesn't have a Port exposedt.
 
-### How to run
+### Usage
+
+#### Running Marco
 
 **Build the binary with**
 
@@ -58,6 +60,20 @@ $ sudo ./marco -bind=8080 -ports=80,8983,8080 -endpoint=tcp://localhost:2375
 $ docker pull nickschuch/marco
 $ docker run -d -p 0.0.0.0:80:80 -v /var/run/docker.sock:/var/run/docker.sock nickschuch/marco
 ```
+
+#### Running a container
+
+As mentioned in the example above Marco requires containers to be run with 2 options:
+* A DOMAIN environment variable
+* A port to be exposed
+
+Here is an example of running a container which meets the criteria above
+
+```
+docker run -d -m 128m --publish-all=true -e "DOMAIN=test.dev" google/golang-hello
+```
+
+Note: The flag --publish-all exposes port 8080 on this container (as per the Dockerfile).
 
 ### Why?
 
