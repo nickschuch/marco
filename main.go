@@ -62,7 +62,6 @@ func proxyCallback(w http.ResponseWriter, r *http.Request) {
     // Todo:
     //   * Make this pluggable (custom load balancer).
     proxyUrl := proxyUrls[rand.Intn(len(proxyUrls))]
-    log.Info(proxyUrls)
 
     // Ensure we keep a log of the connection so we can go back and
     // debug if anything goes wrong.
