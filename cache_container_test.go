@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestAddRemoveContainer(t *testing.T) {
@@ -10,8 +10,8 @@ func TestAddRemoveContainer(t *testing.T) {
 	domain := "www.example.com"
 	addContainer(id, domain, "http://1.2.3.4:10000")
 	containerExists := getContainer(id)
-	assert.Equal(t, containerExists.Domain, domain, "Domain should be www.example.com");
+	assert.Equal(t, containerExists.Domain, domain, "Domain should be www.example.com")
 	removeContainer(id)
 	containerDoesntExist := getCachedContainer(id)
-	assert.Equal(t, containerDoesntExist.Domain, "", "Domain should not be www.example.com");
+	assert.Equal(t, containerDoesntExist.Domain, "", "Domain should not be www.example.com")
 }
