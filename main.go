@@ -107,7 +107,7 @@ func main() {
 	// can be proxied to.
 	populateCache()
 
-	log.info("Started on port: " + bind)
+	log.Info("Started on port: " + bind)
 
 	// Register and run.
 	http.HandleFunc("/", proxyCallback)
