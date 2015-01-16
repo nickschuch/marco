@@ -48,6 +48,13 @@ func eventCallback(event *dockerclient.Event, args ...interface{}) {
 }
 
 func proxyCallback(w http.ResponseWriter, r *http.Request) {
+	// Make sure we have a log of this interaction.
+	log.WithFields(log.Fields{
+		"host":   r.Host,
+		"uri":    r.URL,
+		"method": r.Method,
+	}).Info("Requesting instance...")
+	
 	// Get a list of URL's that we can proxy this connection through to.
 	//
 	// Todo:
@@ -99,6 +106,8 @@ func main() {
 	// Build a cached copy of the containers and the urls that they
 	// can be proxied to.
 	populateCache()
+
+	log.info("Started on port: " + bind)
 
 	// Register and run.
 	http.HandleFunc("/", proxyCallback)
