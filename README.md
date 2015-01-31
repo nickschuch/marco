@@ -47,12 +47,8 @@ $ sudo ./marco
 **Run with all the args**
 
 ```
-$ sudo ./marco -bind=8080 -ports=80,8983,8080 -endpoint=tcp://localhost:2375
+$ sudo ./marco --port=8080 --docker-ports=80,8983,8080 --docker-endpoint=tcp://localhost:2375
 ```
-
-* bind - Server traffic through the following port.
-* ports - The Docker exposed ports that this proxy can use (in order).
-* endpoint - Connection to the Docker daemon.
 
 **Run inside a Docker container**
 
@@ -74,6 +70,26 @@ docker run -d -m 128m --publish-all=true -e "DOMAIN=test.dev" google/golang-hell
 ```
 
 Note: The flag --publish-all exposes port 8080 on this container (as per the Dockerfile).
+
+### Drivers
+
+#### Backends
+
+Anything that results in a list of http paths.
+
+Can be passed with the `--backend` flag.
+
+We currently only support Docker but looking to support something like:
+
+* AWS EC2
+* AWS ECS
+* Tutum
+
+#### Balancer
+
+These are types of load balancers. Currently we only support "Round robin".
+
+Can be passed with the `--balancer` flag.
 
 ### Why?
 

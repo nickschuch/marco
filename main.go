@@ -1,115 +1,69 @@
 package main
 
 import (
-	"flag"
-	log "github.com/Sirupsen/logrus"
-	"github.com/samalba/dockerclient"
-	"math/rand"
+	"strings"
+	"runtime"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"runtime"
+
+	log "github.com/Sirupsen/logrus"
+	"gopkg.in/alecthomas/kingpin.v1"
+
+	reconciler "./reconciler"
+	handling "./handling"
+	logging "./logging"
 )
 
-var bind string
-var host string
-var endpoint string
-var ports string
+var (
+	start       = kingpin.Command("start", "Start the proxy service.")
+	selPort     = start.Flag("port", "The port to bind to.").Default("80").String()
+	selRefresh  = start.Flag("refresh", "How often to update the load balancer.").Default("10s").String()
+	selBackend  = start.Flag("backend", "The name of the backend driver.").Default("docker").String()
+	selBalancer = start.Flag("balancer", "The name of the balancer driver.").Default("round").String()
 
-func eventCallback(event *dockerclient.Event, args ...interface{}) {
-	statesRemove := []string{
-		"die",
-		"stop",
-		"destroy",
-	}
-	statesAdd := []string{
-		"start",
-	}
-
-	if stringInSlice(event.Status, statesRemove) {
-		container := getContainer(event.Id)
-		removeProxy(container.Domain, container.Url)
-		log.WithFields(log.Fields{
-			"event": event.Status,
-		}).Info("Removed container " + container.Domain + " (" + event.Id + ") out of rotation.")
-
-		// Only remove the container when we destroy it.
-		if event.Status == "destroy" {
-			removeContainer(event.Id)
-		}
-	}
-	if stringInSlice(event.Status, statesAdd) {
-		container := getContainer(event.Id)
-		addProxy(container.Domain, container.Url)
-		log.WithFields(log.Fields{
-			"event": event.Status,
-		}).Info("Added container " + container.Domain + " (" + event.Id + ") into rotation.")
-	}
-}
-
-func proxyCallback(w http.ResponseWriter, r *http.Request) {
-	// Make sure we have a log of this interaction.
-	log.WithFields(log.Fields{
-		"host":   r.Host,
-		"uri":    r.URL,
-		"method": r.Method,
-	}).Info("Requesting instance...")
-	
-	// Get a list of URL's that we can proxy this connection through to.
-	//
-	// Todo:
-	//   * Make this pluggable so we can have different type of container discovery.
-	proxyUrls := getProxies(r.Host)
-	if len(proxyUrls) <= 0 {
-		return
-	}
-
-	// Here is implement a basic random load balancer.
-	//
-	// Todo:
-	//   * Make this pluggable (custom load balancer).
-	proxyUrl := proxyUrls[rand.Intn(len(proxyUrls))]
-
-	// Ensure we keep a log of the connection so we can go back and
-	// debug if anything goes wrong.
-	log.WithFields(log.Fields{
-		"host":   r.Host,
-		"uri":    r.URL,
-		"method": r.Method,
-	}).Info("Proxy to: " + proxyUrl)
-
-	// Proxy the connection through.
-	remote, err := url.Parse(proxyUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	proxy := httputil.NewSingleHostReverseProxy(remote)
-	proxy.ServeHTTP(w, r)
-}
+	// We set these as globals so proxyCallback() can access them.
+	// @todo, Find a better way to handle this.
+	reconciled reconciler.Reconciler
+)
 
 func main() {
 	// This allows us to serve more than a single request at a time.
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// These are all the flags that can be passed to this application.
-	flag.StringVar(&bind, "bind", "80", "Server traffic through the following port")
-	flag.StringVar(&host, "host", "172.17.42.1", "The IP or DNS of the host exposing ports.")
-	flag.StringVar(&endpoint, "endpoint", "unix:///var/run/docker.sock", "The Docker API endpoint eg. tcp://localhost:2375")
-	flag.StringVar(&ports, "ports", "80,8080,2368,8983", "The ports you wish to proxy. Ordered in preference eg. 80,2368,8983")
-	flag.Parse()
+	// Instanciate the command.
+	kingpin.Version("0.0.1")
+	kingpin.CommandLine.Help = "Marco - Proxy for multiple backends."
+	switch kingpin.Parse() {
+	case "start":
+		cmdStart()
+	}
+}
 
-	// Get the Docker client that we can resuse for building a Proxy URL list
-	// as well as monitor events.
-	dockerClient := getDockerClient()
-	dockerClient.StartMonitorEvents(eventCallback)
+func cmdStart() {
+	// This sets up our "reconciled" object that handles backend connections
+	// and load balancing.
+	reconciled.AddBackend(*selBackend)
+	reconciled.AddBalancer(*selBalancer)
+	reconciled.SetRefresh(*selRefresh)
+	reconciled.Start()
 
-	// Build a cached copy of the containers and the urls that they
-	// can be proxied to.
-	populateCache()
-
-	log.Info("Started on port: " + bind)
-
-	// Register and run.
+	// Start the webserver.
+	logging.Info("Starting on port " + *selPort)
 	http.HandleFunc("/", proxyCallback)
-	http.ListenAndServe(":"+bind, nil)
+	log.Fatal(http.ListenAndServe(":" + *selPort, nil))
+}
+
+func proxyCallback(w http.ResponseWriter, r *http.Request) {
+	// This returns an address as per the rules of the
+	// Load balancers implementation.
+	domain := strings.Split(r.Host, ":")
+	address, error := reconciled.GetAddress(domain[0])
+	handling.Check(error)
+
+	// Proxy the connection through.
+	remote, error := url.Parse(address)
+	handling.Check(error)
+	proxy := httputil.NewSingleHostReverseProxy(remote)
+	proxy.ServeHTTP(w, r)
 }
