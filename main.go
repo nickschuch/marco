@@ -16,11 +16,10 @@ import (
 )
 
 var (
-	start       = kingpin.Command("start", "Start the proxy service.")
-	selPort     = start.Flag("port", "The port to bind to.").Default("80").String()
-	selRefresh  = start.Flag("refresh", "How often to update the load balancer.").Default("10s").String()
-	selBackend  = start.Flag("backend", "The name of the backend driver.").Default("docker").String()
-	selBalancer = start.Flag("balancer", "The name of the balancer driver.").Default("round").String()
+	selPort     = kingpin.Flag("port", "The port to bind to.").Default("80").String()
+	selRefresh  = kingpin.Flag("refresh", "How often to update the load balancer.").Default("10s").String()
+	selBackend  = kingpin.Flag("backend", "The name of the backend driver.").Default("docker").String()
+	selBalancer = kingpin.Flag("balancer", "The name of the balancer driver.").Default("round").String()
 
 	// We set these as globals so proxyCallback() can access them.
 	// @todo, Find a better way to handle this.
@@ -34,13 +33,8 @@ func main() {
 	// Instanciate the command.
 	kingpin.Version("0.0.1")
 	kingpin.CommandLine.Help = "Marco - Proxy for multiple backends."
-	switch kingpin.Parse() {
-	case "start":
-		cmdStart()
-	}
-}
+	kingpin.Parse()
 
-func cmdStart() {
 	// This sets up our "reconciled" object that handles backend connections
 	// and load balancing.
 	reconciled.AddBackend(*selBackend)
