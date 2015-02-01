@@ -11,8 +11,7 @@ RUN go get github.com/samalba/dockerclient
 RUN go get github.com/nickschuch/go-tutum/tutum
 
 # Build the binary.
-RUN ls -l
-RUN go build
+RUN cd /go/src/app && go build
 
 EXPOSE 80
 ENTRYPOINT ["marco"]
