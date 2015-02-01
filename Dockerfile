@@ -2,6 +2,7 @@ FROM golang:1.3
 
 RUN mkdir -p /go/src/app
 WORKDIR /go/src/app
+Add . /go/src/app
 
 # Get the libraries.
 RUN go get github.com/Sirupsen/logrus
