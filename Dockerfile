@@ -1,8 +1,7 @@
 FROM golang:1.4
 
-RUN mkdir -p /go/src/app
-WORKDIR /go/src/app
-Add . /go/src/app
+Add . /opt/marco
+WORKDIR /opt/marco
 
 # Get the libraries.
 RUN go get github.com/Sirupsen/logrus
@@ -11,7 +10,7 @@ RUN go get github.com/samalba/dockerclient
 RUN go get github.com/nickschuch/go-tutum/tutum
 
 # Build the binary.
-RUN cd /go/src/app && go build
+RUN go build
 
 EXPOSE 80
 ENTRYPOINT ["marco"]
