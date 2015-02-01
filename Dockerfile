@@ -13,5 +13,5 @@ RUN go get github.com/nickschuch/go-tutum/tutum
 RUN go build
 
 EXPOSE 80
-ENTRYPOINT ["marco"]
+ENTRYPOINT ["./marco"]
 CMD ["--help"]
