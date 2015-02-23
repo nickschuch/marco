@@ -1,2 +1,5 @@
 main
 marco
+bin
+.vagrant
+golang-crosscompile
