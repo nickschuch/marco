@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.network :private_network, :ip => "192.168.80.10"
   
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder ".", "/opt/golang/src/github.com/nickschuch/marco"
   
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", 1024]
