@@ -1,17 +1,10 @@
 FROM golang:1.4
 
-Add . /opt/marco
-WORKDIR /opt/marco
+COPY . /go/src/github.com/nickschuch/marco
+WORKDIR /go/src/github.com/nickschuch/marco
 
-# Get the libraries.
-RUN go get github.com/Sirupsen/logrus
-RUN go get gopkg.in/alecthomas/kingpin.v1
-RUN go get github.com/samalba/dockerclient
-RUN go get github.com/nickschuch/go-tutum/tutum
-
-# Build the binary.
 RUN go build
 
 EXPOSE 80
-ENTRYPOINT ["./marco"]
+ENTRYPOINT ["marco"]
 CMD ["--help"]
