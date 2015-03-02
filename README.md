@@ -1,9 +1,22 @@
 Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco)
 =====
 
-A simple proxy for Docker containers.
+An API driver load balancer for modern day application infrastructure.
 
 ![Overview](/docs/overview.png "Overview")
+
+### Balancers and backends
+
+**Balancer**
+
+* First - Will always return the first URL endpoint.
+* Round - Will round robin through the list of URL endpoints.
+
+**Drivers**
+
+* Docker - The Docker daemon and by extension, the Docker Swarm project.
+* Tutum - https://www.tutum.co
+* AWS ECS - Coming soon...
 
 ### Example
 
@@ -35,7 +48,7 @@ This proxy will setup the following routes:
 **Build the binary with**
 
 ```
-$ go build
+$ make build
 ```
 
 **Run the binary with**
@@ -44,10 +57,10 @@ $ go build
 $ sudo ./marco
 ```
 
-**Run with all the args**
+**Run with on a different port**
 
 ```
-$ sudo ./marco --port=8080 --docker-ports=80,8983,8080 --docker-endpoint=tcp://localhost:2375
+$ sudo ./marco --port=8080
 ```
 
 **Run inside a Docker container**
@@ -57,19 +70,7 @@ $ docker pull nickschuch/marco
 $ docker run -d -p 0.0.0.0:80:80 -v /var/run/docker.sock:/var/run/docker.sock nickschuch/marco
 ```
 
-#### Running a container
-
-As mentioned in the example above Marco requires containers to be run with 2 options:
-* A DOMAIN environment variable
-* A port to be exposed
-
-Here is an example of running a container which meets the criteria above
-
-```
-docker run -d -m 128m --publish-all=true -e "DOMAIN=test.dev" google/golang-hello
-```
-
-Note: The flag --publish-all exposes port 8080 on this container (as per the Dockerfile).
+Please see the CLI for more configuration.
 
 ### Drivers
 
@@ -79,15 +80,9 @@ Anything that results in a list of http paths.
 
 Can be passed with the `--backend` flag.
 
-We currently only support Docker but looking to support something like:
-
-* AWS EC2
-* AWS ECS
-* Tutum
-
 #### Balancer
 
-These are types of load balancers. Currently we only support "Round robin".
+These are types of load balancers. Currently we support "Round robin" and "First" balancers.
 
 Can be passed with the `--balancer` flag.
 
@@ -98,14 +93,3 @@ I created this proxy for 2 reasons.
 * Load balance across multiple hosts with containers ready to serve a single site. Powered by Docker Swarm.
 
 ![Why](/docs/why.png "Why")
-
-### Demo
-
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=2pzwmtCeSyQ
-" target="_blank"><img src="http://img.youtube.com/vi/2pzwmtCeSyQ/0.jpg" 
-alt="Marco - demo " width="240" height="180" border="10" /></a>
-
-### Roadmap
-
-* Http auth (maybe)
-* Pluggable load balancers
