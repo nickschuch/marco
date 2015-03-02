@@ -1,10 +1,10 @@
-package round
+package balancer_round
 
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	balancer ".."
+	"github.com/nickschuch/marco/balancer"
 )
 
 func TestBalancerRound(t *testing.T) {

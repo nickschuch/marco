@@ -10,9 +10,9 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v1"
 
-	handling "./handling"
-	logging "./logging"
-	reconciler "./reconciler"
+	"github.com/nickschuch/marco/handling"
+	"github.com/nickschuch/marco/logging"
+	"github.com/nickschuch/marco/reconciler"
 )
 
 var (

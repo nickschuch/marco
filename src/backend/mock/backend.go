@@ -1,7 +1,7 @@
 package backend_mock
 
 import (
-	backend ".."
+	"github.com/nickschuch/marco/backend"
 )
 
 type BackendMock struct{}

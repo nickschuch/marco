@@ -1,10 +1,10 @@
-package round
+package balancer_round
 
 import (
 	"errors"
 	"sort"
 
-	balancer ".."
+	"github.com/nickschuch/marco/balancer"
 )
 
 var (

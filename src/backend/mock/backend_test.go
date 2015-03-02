@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	backend ".."
+	"github.com/nickschuch/marco/backend"
 )
 
 func TestInit(t *testing.T) {

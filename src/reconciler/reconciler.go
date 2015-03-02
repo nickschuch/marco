@@ -1,15 +1,15 @@
 package reconciler
 
 import (
-	backend "../backend"
-	_ "../backend/docker"
-	_ "../backend/mock"
-	_ "../backend/tutum"
-	balancer "../balancer"
-	_ "../balancer/first"
-	_ "../balancer/round"
-	handling "../handling"
-	logging "../logging"
+	"github.com/nickschuch/marco/backend"
+	_ "github.com/nickschuch/marco/backend/docker"
+	_ "github.com/nickschuch/marco/backend/mock"
+	_ "github.com/nickschuch/marco/backend/tutum"
+	"github.com/nickschuch/marco/balancer"
+	_ "github.com/nickschuch/marco/balancer/first"
+	_ "github.com/nickschuch/marco/balancer/round"
+	"github.com/nickschuch/marco/handling"
+	"github.com/nickschuch/marco/logging"
 )
 
 type Reconciler struct {

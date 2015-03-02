@@ -8,8 +8,8 @@ import (
 	"github.com/samalba/dockerclient"
 	"gopkg.in/alecthomas/kingpin.v1"
 
-	backend ".."
-	handling "../../handling"
+	"github.com/nickschuch/marco/backend"
+	"github.com/nickschuch/marco/handling"
 )
 
 var (

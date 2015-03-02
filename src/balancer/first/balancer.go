@@ -1,9 +1,9 @@
-package first
+package balancer_first
 
 import (
 	"errors"
 
-	balancer ".."
+	"github.com/nickschuch/marco/balancer"
 )
 
 var (
