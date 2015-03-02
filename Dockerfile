@@ -12,5 +12,5 @@ RUN go get github.com/daryl/cash
 RUN go build
 
 EXPOSE 80
-ENTRYPOINT ["marco"]
+ENTRYPOINT ["./marco"]
 CMD ["--help"]
