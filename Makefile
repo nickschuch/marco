@@ -19,6 +19,7 @@ build: deps
 
 deps:
 	@echo "Downloading libraries..."
+	@$(GO) get github.com/daryl/cash
 	@$(GO) get github.com/samalba/dockerclient
 	@$(GO) get github.com/Sirupsen/logrus
 	@$(GO) get github.com/nickschuch/go-tutum/tutum

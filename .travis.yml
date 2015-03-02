@@ -3,5 +3,5 @@ go:
  - 1.3
 
 script:
- - go test -v ./...
+ - make test
 
