@@ -1,23 +1,22 @@
 package main
 
 import (
-	"strings"
-	"runtime"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"runtime"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v1"
 
-	reconciler "./reconciler"
-	handling "./handling"
-	logging "./logging"
+	"github.com/nickschuch/marco/handling"
+	"github.com/nickschuch/marco/logging"
+	"github.com/nickschuch/marco/reconciler"
 )
 
 var (
 	selPort     = kingpin.Flag("port", "The port to bind to.").Default("80").String()
-	selRefresh  = kingpin.Flag("refresh", "How often to update the load balancer.").Default("10s").String()
 	selBackend  = kingpin.Flag("backend", "The name of the backend driver.").Default("docker").String()
 	selBalancer = kingpin.Flag("balancer", "The name of the balancer driver.").Default("round").String()
 
@@ -37,22 +36,23 @@ func main() {
 
 	// This sets up our "reconciled" object that handles backend connections
 	// and load balancing.
-	reconciled.AddBackend(*selBackend)
-	reconciled.AddBalancer(*selBalancer)
-	reconciled.SetRefresh(*selRefresh)
+	reconciled.SetBackendType(*selBackend)
+	reconciled.SetBalancerType(*selBalancer)
 	reconciled.Start()
 
 	// Start the webserver.
 	logging.Info("Starting on port " + *selPort)
 	http.HandleFunc("/", proxyCallback)
-	log.Fatal(http.ListenAndServe(":" + *selPort, nil))
+	log.Fatal(http.ListenAndServe(":"+*selPort, nil))
 }
 
 func proxyCallback(w http.ResponseWriter, r *http.Request) {
 	// This returns an address as per the rules of the
 	// Load balancers implementation.
+	// This is split by ":" so we can get just the domain
+	// and not pass the port to the backend.
 	domain := strings.Split(r.Host, ":")
-	address, error := reconciled.GetAddress(domain[0])
+	address, error := reconciled.Address(domain[0])
 	handling.Check(error)
 
 	// Proxy the connection through.

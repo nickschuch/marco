@@ -8,7 +8,7 @@ RM=rm -rf
 CROSS=https://github.com/davecheney/golang-crosscompile.git
 CROSS_BASH=source golang-crosscompile/crosscompile.bash
 
-SOURCE=src/main.go
+SOURCE=main.go
 TARGETS=darwin-386 darwin-amd64 linux-386 linux-amd64 linux-arm
 
 all: test
@@ -19,6 +19,7 @@ build: deps
 
 deps:
 	@echo "Downloading libraries..."
+	@$(GO) get github.com/daryl/cash
 	@$(GO) get github.com/samalba/dockerclient
 	@$(GO) get github.com/Sirupsen/logrus
 	@$(GO) get github.com/nickschuch/go-tutum/tutum

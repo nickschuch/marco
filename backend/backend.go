@@ -5,9 +5,8 @@ import (
 )
 
 type Backend interface {
-	MultipleDomains() bool
 	Start() error
-	GetAddresses() (map[string][]string, error)
+	Addresses(string) ([]string, error)
 }
 
 var (
@@ -37,3 +36,10 @@ func New(name string) (Backend, error) {
 	return nil, ErrNotFound
 }
 
+func List() []string {
+	keys := make([]string, 0, len(backends))
+	for k := range backends {
+		keys = append(keys, k)
+	}
+	return keys
+}

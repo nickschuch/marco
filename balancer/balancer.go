@@ -5,11 +5,9 @@ import (
 )
 
 type Balancer interface {
-	SetAddresses([]string) error
-	GetAddresses() ([]string, error)
-	AddAddress(string) error
-	RemoveAddress(string) error
-	GetAddress() (string, error)
+	SetAddressList([]string) error
+	GetAddressList() ([]string, error)
+	Next() (string, error)
 }
 
 var (
@@ -38,4 +36,3 @@ func New(name string) (Balancer, error) {
 
 	return nil, ErrNotFound
 }
-
