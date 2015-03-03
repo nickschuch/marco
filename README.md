@@ -1,4 +1,4 @@
-Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco)
+Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco) [![Coverage Status](https://coveralls.io/repos/nickschuch/marco/badge.svg)](https://coveralls.io/r/nickschuch/marco)
 =====
 
 An API driver load balancer for modern day application infrastructure.
