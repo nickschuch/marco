@@ -18,6 +18,8 @@ An API driver load balancer for modern day application infrastructure.
 * [Tutum](/backend/tutum/README.md) - https://www.tutum.co
 * AWS ECS - Coming soon...
 
+Note: As more providers go into Docker Swarm we won't need to have so many drivers!
+
 ### Example
 
 I have the containers:
