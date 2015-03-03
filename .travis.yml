@@ -9,4 +9,6 @@ before_install:
 
 script:
  - make test
- - $HOME/gopath/bin/goveralls -service=travis-ci
+ # This is a work around for now since Golang doesn't
+ # allow coverage for more than one package.
+ - scripts/coverage.sh
