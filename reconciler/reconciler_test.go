@@ -39,4 +39,8 @@ func TestAddress(t *testing.T) {
 	assert.Equal(t, "5.6.7.8", actual, "Can get the next address.")
 	actual, _ = reconciled.Address(domain)
 	assert.Equal(t, "1.2.3.4", actual, "Can get the first address.")
+
+	// Ensure we handle having no addresses gracefully.
+	actual, _ = reconciled.Address("bar.com")
+	assert.Equal(t, "", actual, "Can handle no addresses gracefully.")
 }

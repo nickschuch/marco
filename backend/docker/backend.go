@@ -19,6 +19,9 @@ var (
 )
 
 type BackendDocker struct {
+	// This is where we store the container addresses
+	// for a period of time. It cuts down on API calls
+	// and frees up resource.
 	cache *cash.Cash
 }
 

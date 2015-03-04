@@ -11,10 +11,15 @@ func init() {
 }
 
 func (b *BackendMock) Addresses(domain string) ([]string, error) {
-	addresses := []string{
-		"1.2.3.4",
-		"5.6.7.8",
+	var addresses []string
+
+	if domain != "bar.com" {
+		addresses = []string{
+			"1.2.3.4",
+			"5.6.7.8",
+		}
 	}
+
 	return addresses, nil
 }
 
