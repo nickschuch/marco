@@ -10,6 +10,7 @@ An API driver load balancer for modern day application infrastructure.
 **Balancer**
 
 * First - Will always return the first URL endpoint.
+* Random - Will choose a random endpoint from a list of URLs.
 * Round - Will round robin through the list of URL endpoints.
 
 **Drivers**
@@ -84,7 +85,7 @@ Can be passed with the `--backend` flag.
 
 #### Balancer
 
-These are types of load balancers. Currently we support "Round robin" and "First" balancers.
+These are types of load balancers. Currently we support "Round robin", "First" and "Random" balancers.
 
 Can be passed with the `--balancer` flag.
 
