@@ -19,6 +19,7 @@ build: deps
 
 deps:
 	@echo "Downloading libraries..."
+	@$(GO) get github.com/stretchr/objx
 	@$(GO) get github.com/daryl/cash
 	@$(GO) get github.com/samalba/dockerclient
 	@$(GO) get github.com/Sirupsen/logrus
@@ -52,3 +53,6 @@ clean:
 realclean: clean
 	$(RM) golang-crosscompile
 
+coverage:
+	# This is a script provided by upstream. We won't to need this in 1.5 of Golang.
+	scripts/coverage.sh
