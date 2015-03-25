@@ -7,6 +7,7 @@ import (
 	_ "github.com/nickschuch/marco/backend/tutum"
 	"github.com/nickschuch/marco/balancer"
 	_ "github.com/nickschuch/marco/balancer/first"
+	_ "github.com/nickschuch/marco/balancer/random"
 	_ "github.com/nickschuch/marco/balancer/round"
 	"github.com/nickschuch/marco/handling"
 	"github.com/nickschuch/marco/logging"

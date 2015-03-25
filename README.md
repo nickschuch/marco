@@ -1,4 +1,4 @@
-Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco) [![Coverage Status](https://coveralls.io/repos/nickschuch/marco/badge.svg)](https://coveralls.io/r/nickschuch/marco)
+Marco [![Build Status](https://travis-ci.org/nickschuch/marco.svg?branch=master)](https://travis-ci.org/nickschuch/marco) [![Coverage Status](https://coveralls.io/repos/nickschuch/marco/badge.svg?branch=master)](https://coveralls.io/r/nickschuch/marco?branch=master)
 =====
 
 An API driver load balancer for modern day application infrastructure.
@@ -10,6 +10,7 @@ An API driver load balancer for modern day application infrastructure.
 **Balancer**
 
 * First - Will always return the first URL endpoint.
+* Random - Will choose a random endpoint from a list of URLs.
 * Round - Will round robin through the list of URL endpoints.
 
 **Drivers**
@@ -84,7 +85,7 @@ Can be passed with the `--backend` flag.
 
 #### Balancer
 
-These are types of load balancers. Currently we support "Round robin" and "First" balancers.
+These are types of load balancers. Currently we support "Round robin", "First" and "Random" balancers.
 
 Can be passed with the `--balancer` flag.
 
