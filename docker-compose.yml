@@ -2,4 +2,4 @@ build:
   image:       "nickschuch/local-go"
   working_dir: "/opt/golang/src/github.com/nickschuch/marco"
   volumes:
-   - ".:/opt/golang/src/github.com/nickschuch/marco"
+    - ".:/opt/golang/src/github.com/nickschuch/marco"

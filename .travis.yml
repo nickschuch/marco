@@ -6,9 +6,13 @@ before_install:
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
   - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
+  - sudo curl -o /usr/local/bin/coverage https://raw.githubusercontent.com/mlafeldt/chef-runner/v0.7.0/script/coverage
+  - sudo chmod a+x /usr/local/bin/coverage
+  - sudo curl -o /usr/local/bin/go-getter https://raw.githubusercontent.com/joewalnes/go-getter/master/go-getter
+  - sudo chmod a+x /usr/local/bin/go-getter
 
 script:
  - make test
  # This is a work around for now since Golang doesn't
  # allow coverage for more than one package.
- - scripts/coverage.sh --coveralls
+ - coverage --coveralls

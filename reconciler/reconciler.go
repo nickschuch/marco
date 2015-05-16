@@ -3,6 +3,7 @@ package reconciler
 import (
 	"github.com/nickschuch/marco/backend"
 	_ "github.com/nickschuch/marco/backend/docker"
+	_ "github.com/nickschuch/marco/backend/ecs"
 	_ "github.com/nickschuch/marco/backend/mock"
 	_ "github.com/nickschuch/marco/backend/tutum"
 	"github.com/nickschuch/marco/balancer"
