@@ -1,16 +1,16 @@
 package backend_ecs
 
 import (
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/service/ecs"
 	"github.com/awslabs/aws-sdk-go/service/ec2"
+	"github.com/awslabs/aws-sdk-go/service/ecs"
 	"github.com/daryl/cash"
 	"gopkg.in/alecthomas/kingpin.v1"
-	log "github.com/Sirupsen/logrus"
 
 	"github.com/nickschuch/marco/backend"
 	"github.com/nickschuch/marco/handling"
@@ -122,14 +122,14 @@ func getList() (map[string][]string, error) {
 			for _, p := range c.NetworkBindings {
 				// Check that this container has exposed the port that we require.
 				containerPort := strconv.FormatInt(*p.ContainerPort, 10)
-				if ! strings.Contains(*cliECSPorts, containerPort) {
+				if !strings.Contains(*cliECSPorts, containerPort) {
 					continue
 				}
 
 				// Add the port to the list.
 				hostIP := ips[*t.ContainerInstanceARN]
 				hostPort := strconv.FormatInt(*p.HostPort, 10)
-				url := "http://"+hostIP+":"+hostPort
+				url := "http://" + hostIP + ":" + hostPort
 				list[domain] = append(list[domain], url)
 			}
 		}
@@ -197,7 +197,7 @@ func getContainerInstance(arn *string) *ecs.ContainerInstance {
 	resp, err := client.DescribeContainerInstances(params)
 	check(err)
 
-	return resp.ContainerInstances[0];
+	return resp.ContainerInstances[0]
 }
 
 func getEc2IP(id *string) string {
@@ -213,5 +213,5 @@ func getEc2IP(id *string) string {
 	check(err)
 
 	// https://github.com/awslabs/aws-sdk-go/blob/master/service/ec2/api.go#L13194
-	return *resp.Reservations[0].Instances[0].PublicIPAddress;
+	return *resp.Reservations[0].Instances[0].PublicIPAddress
 }
