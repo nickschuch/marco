@@ -99,18 +99,25 @@ func getList() (map[string][]string, error) {
 	// Get the IP address of each of the container instances.
 	// That way we can use these addresses further down on our container urls.
 	instancesInput := &ecs.ListContainerInstancesInput{
-		Cluster:    aws.String(*cliECSCluster),
+		Cluster: aws.String(*cliECSCluster),
 	}
 	instances, err := client.ListContainerInstances(instancesInput)
 	check(err)
 	for _, i := range instances.ContainerInstanceARNs {
 		containerInstance := getContainerInstance(i)
-		ips[*i] = getEc2IP(containerInstance.EC2InstanceID) 
+		ips[*i] = getEc2IP(containerInstance.EC2InstanceID)
 	}
 
 	// Loop over the containers and build a list of urls to hit.
 	for _, t := range described.Tasks {
 		for _, c := range t.Containers {
+			// Ensure this container has the required environment variable to be
+			// exposed through the load balancer.
+			domain := getContainerEnv(*t.TaskDefinitionARN, *c.Name, "DOMAIN")
+			if domain == "" {
+				continue
+			}
+
 			// Loop over all the ports that have been exposed.
 			for _, p := range c.NetworkBindings {
 				// Check that this container has exposed the port that we require.
@@ -123,7 +130,7 @@ func getList() (map[string][]string, error) {
 				hostIP := ips[*t.ContainerInstanceARN]
 				hostPort := strconv.FormatInt(*p.HostPort, 10)
 				url := "http://"+hostIP+":"+hostPort
-				list[*c.Name] = append(list[*c.Name], url)
+				list[domain] = append(list[domain], url)
 			}
 		}
 	}
@@ -151,6 +158,31 @@ func check(err error) {
 		// A non-service error occurred.
 		panic(err)
 	}
+}
+
+func getContainerEnv(definition string, name string, key string) string {
+	client := getECSClient()
+
+	tasksDefInput := &ecs.DescribeTaskDefinitionInput{
+		TaskDefinition: aws.String(definition),
+	}
+	tasksDefOutput, err := client.DescribeTaskDefinition(tasksDefInput)
+	check(err)
+
+	for _, c := range tasksDefOutput.TaskDefinition.ContainerDefinitions {
+		if *c.Name != name {
+			continue
+		}
+
+		// Now we know we can look for the environment variable.
+		for _, e := range c.Environment {
+			if *e.Name == key {
+				return *e.Value
+			}
+		}
+	}
+
+	return ""
 }
 
 func getContainerInstance(arn *string) *ecs.ContainerInstance {
