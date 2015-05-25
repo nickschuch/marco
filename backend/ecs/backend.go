@@ -83,7 +83,9 @@ func getList() (map[string][]string, error) {
 	list := make(map[string][]string)
 	ips := make(map[string]string)
 
-	tasksInput := &ecs.ListTasksInput{}
+	tasksInput := &ecs.ListTasksInput{
+		Cluster: aws.String(*cliECSCluster),
+	}
 	tasks, err := client.ListTasks(tasksInput)
 	check(err)
 
