@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -54,6 +55,15 @@ func proxyCallback(w http.ResponseWriter, r *http.Request) {
 	domain := strings.Split(r.Host, ":")
 	address, error := reconciled.Address(domain[0])
 	handling.Check(error)
+
+	// Ensure we have an address. If we don't then return:
+	//   * 503 = Resource unavailable.
+	//   * A friendly little message.
+	if address == "" {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		fmt.Fprintf(w, "Cannot find instance.")
+		return
+	}
 
 	// Proxy the connection through.
 	remote, error := url.Parse(address)
