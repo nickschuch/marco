@@ -61,7 +61,7 @@ func proxyCallback(w http.ResponseWriter, r *http.Request) {
 	//   * A friendly little message.
 	if address == "" {
 		w.WriteHeader(http.StatusServiceUnavailable)
-		fmt.Fprintf(w, "Cannot find instance.")
+		fmt.Fprintf(w, "Service Unavailable - This can indicate the instance is being deployed or has been terminated.")
 		return
 	}
 
