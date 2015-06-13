@@ -1,16 +1,16 @@
 package backend_ecs
 
 import (
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/service/ecs"
 	"github.com/awslabs/aws-sdk-go/service/ec2"
+	"github.com/awslabs/aws-sdk-go/service/ecs"
 	"github.com/daryl/cash"
 	"gopkg.in/alecthomas/kingpin.v1"
-	log "github.com/Sirupsen/logrus"
 
 	"github.com/nickschuch/marco/backend"
 	"github.com/nickschuch/marco/handling"
@@ -83,7 +83,9 @@ func getList() (map[string][]string, error) {
 	list := make(map[string][]string)
 	ips := make(map[string]string)
 
-	tasksInput := &ecs.ListTasksInput{}
+	tasksInput := &ecs.ListTasksInput{
+		Cluster: aws.String(*cliECSCluster),
+	}
 	tasks, err := client.ListTasks(tasksInput)
 	check(err)
 
@@ -99,31 +101,38 @@ func getList() (map[string][]string, error) {
 	// Get the IP address of each of the container instances.
 	// That way we can use these addresses further down on our container urls.
 	instancesInput := &ecs.ListContainerInstancesInput{
-		Cluster:    aws.String(*cliECSCluster),
+		Cluster: aws.String(*cliECSCluster),
 	}
 	instances, err := client.ListContainerInstances(instancesInput)
 	check(err)
 	for _, i := range instances.ContainerInstanceARNs {
 		containerInstance := getContainerInstance(i)
-		ips[*i] = getEc2IP(containerInstance.EC2InstanceID) 
+		ips[*i] = getEc2IP(containerInstance.EC2InstanceID)
 	}
 
 	// Loop over the containers and build a list of urls to hit.
 	for _, t := range described.Tasks {
 		for _, c := range t.Containers {
+			// Ensure this container has the required environment variable to be
+			// exposed through the load balancer.
+			domain := getContainerEnv(*t.TaskDefinitionARN, *c.Name, "DOMAIN")
+			if domain == "" {
+				continue
+			}
+
 			// Loop over all the ports that have been exposed.
 			for _, p := range c.NetworkBindings {
 				// Check that this container has exposed the port that we require.
 				containerPort := strconv.FormatInt(*p.ContainerPort, 10)
-				if ! strings.Contains(*cliECSPorts, containerPort) {
+				if !strings.Contains(*cliECSPorts, containerPort) {
 					continue
 				}
 
 				// Add the port to the list.
 				hostIP := ips[*t.ContainerInstanceARN]
 				hostPort := strconv.FormatInt(*p.HostPort, 10)
-				url := "http://"+hostIP+":"+hostPort
-				list[*c.Name] = append(list[*c.Name], url)
+				url := "http://" + hostIP + ":" + hostPort
+				list[domain] = append(list[domain], url)
 			}
 		}
 	}
@@ -153,6 +162,31 @@ func check(err error) {
 	}
 }
 
+func getContainerEnv(definition string, name string, key string) string {
+	client := getECSClient()
+
+	tasksDefInput := &ecs.DescribeTaskDefinitionInput{
+		TaskDefinition: aws.String(definition),
+	}
+	tasksDefOutput, err := client.DescribeTaskDefinition(tasksDefInput)
+	check(err)
+
+	for _, c := range tasksDefOutput.TaskDefinition.ContainerDefinitions {
+		if *c.Name != name {
+			continue
+		}
+
+		// Now we know we can look for the environment variable.
+		for _, e := range c.Environment {
+			if *e.Name == key {
+				return *e.Value
+			}
+		}
+	}
+
+	return ""
+}
+
 func getContainerInstance(arn *string) *ecs.ContainerInstance {
 	client := getECSClient()
 
@@ -165,7 +199,7 @@ func getContainerInstance(arn *string) *ecs.ContainerInstance {
 	resp, err := client.DescribeContainerInstances(params)
 	check(err)
 
-	return resp.ContainerInstances[0];
+	return resp.ContainerInstances[0]
 }
 
 func getEc2IP(id *string) string {
@@ -181,5 +215,5 @@ func getEc2IP(id *string) string {
 	check(err)
 
 	// https://github.com/awslabs/aws-sdk-go/blob/master/service/ec2/api.go#L13194
-	return *resp.Reservations[0].Instances[0].PublicIPAddress;
+	return *resp.Reservations[0].Instances[0].PublicIPAddress
 }
