@@ -1,44 +1,23 @@
 #!/usr/bin/make -f
 
-PROJCET=marco
-SHELL=/bin/bash
-MKDIR=mkdir
-GIT=git
 GO=go
-RM=rm -rf
-CROSS_BASH=source /opt/golang/cross/crosscompile.bash
+GB=gb
 
-SOURCE=main.go
-TARGETS=darwin-386 darwin-amd64 linux-386 linux-amd64 linux-arm
+all: build
 
-all: test
-
-build: deps
+build: clean test
 	@echo "Building..."
-	@$(GO) build -o bin/$(PROJCET) $(SOURCE)
+	env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GB) build -ldflags '-w -extld ld -extldflags -static'
 
-deps:
-	@echo "Downloading libraries..."
-	go-getter Gofile
-
-xbuild: deps dirs
-	@for target in $(TARGETS); do \
-		echo "Building for $$target..."; \
-		$(CROSS_BASH) && \
-		$(GO)-$$target build -o bin/$(PROJCET)-$$target $(SOURCE); \
-	done;
-
-dirs:
-	@$(MKDIR) -p bin
-
-test: build
-	@echo "Running tests..."
-	@$(GO) test ./...
+build-all: build
+	@echo "Building others..."
+	env GOOS=linux GOARCH=386 $(GB) build
+	env GOOS=darwin GOARCH=amd64 $(GB) build
+	env GOOS=darwin GOARCH=386 $(GB) build
 
 clean:
-	@echo "Cleaning up binaries..."
-	$(RM) bin
+	rm -fR pkg bin
 
-coverage:
-	@echo "Build code coverage..."
-	coverage
+test:
+	@echo "Running tests..."
+	@$(GB) test -test.v=true
