@@ -33,4 +33,4 @@ INFO[0000] Receiving backend data on port 81
 
 ### Libraries
 
-* **Lib** https://github.com/nickschuch/marco-lib - Used for backend services to leverage for consistent code when pushing to Marco.
+* **Lib** (https://github.com/nickschuch/marco-lib) - Used for backend services to leverage for consistent code when pushing to Marco.
