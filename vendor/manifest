@@ -1,0 +1,112 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "418b41d23a1bf978c06faea5313ba194650ac088",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/alecthomas/kingpin",
+			"repository": "https://github.com/alecthomas/kingpin",
+			"revision": "aedd5430ecd39ba1396fee0c00308b494c552b1e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/alecthomas/template",
+			"repository": "https://github.com/alecthomas/template",
+			"revision": "b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/alecthomas/units",
+			"repository": "https://github.com/alecthomas/units",
+			"revision": "6b4e7dc5e3143b85ea77909c72caf89416fc2915",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bugsnag/bugsnag-go",
+			"repository": "https://github.com/bugsnag/bugsnag-go",
+			"revision": "9ee24c1db7e2c5b87e7228acb3e587a35124a041",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bugsnag/osext",
+			"repository": "https://github.com/bugsnag/osext",
+			"revision": "0dd3f918b21bec95ace9dc86c7e70266cfc5c702",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/bugsnag/panicwrap",
+			"repository": "https://github.com/bugsnag/panicwrap",
+			"revision": "e5f9854865b9778a45169fc249e99e338d4d6f27",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/codahale/hdrhistogram",
+			"repository": "https://github.com/codahale/hdrhistogram",
+			"revision": "954f16e8b9ef0e5d5189456aa4c1202758e04f17",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/getsentry/raven-go",
+			"repository": "https://github.com/getsentry/raven-go",
+			"revision": "2d3d467f796d3db1dd46f9b163ccf76ab320d2fc",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/forward",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/forward"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/memmetrics",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/memmetrics"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/roundrobin",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/roundrobin"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/utils",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/utils"
+		},
+		{
+			"importpath": "github.com/mailgun/timetools",
+			"repository": "https://github.com/mailgun/timetools",
+			"revision": "fd192d755b00c968d312d23f521eb0cdc6f66bd0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/tobi/airbrake-go",
+			"repository": "https://github.com/tobi/airbrake-go",
+			"revision": "5b5e269e1bc398d43f67e43dafff3414a59cd5a2",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/alecthomas/kingpin.v1",
+			"repository": "https://gopkg.in/alecthomas/kingpin.v1",
+			"revision": "45f9714aa86a9624491adeaab1e9df1baf84dd38",
+			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/mgo.v2/bson",
+			"repository": "https://gopkg.in/mgo.v2",
+			"revision": "22287bab4379e1fbf6002fb4eb769888f3fb224c",
+			"branch": "v2",
+			"path": "/bson"
+		}
+	]
+}

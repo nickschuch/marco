@@ -4,3 +4,4 @@ bin
 .vagrant
 golang-crosscompile
 .cover
+/pkg
