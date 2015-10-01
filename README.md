@@ -30,3 +30,7 @@ $ docker run -d --name=marco -p 0.0.0.0:80:80 nickschuch/marco
 INFO[0000] Balancing connections on port 80             
 INFO[0000] Receiving backend data on port 81 
 ```
+
+### Libraries
+
+* **Lib** https://github.com/nickschuch/marco-lib - Used for backend services to leverage for consistent code when pushing to Marco.
