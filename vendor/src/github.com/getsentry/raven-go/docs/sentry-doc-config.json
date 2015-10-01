@@ -1,0 +1,14 @@
+{
+  "platforms": {
+    "go": {
+      "name": "Go",
+      "type": "language",
+      "doc_link": "",
+      "wizard": [
+        "index#installation",
+        "index#configuring-the-client",
+        "index#reporting-errors"
+      ]
+    }
+  }
+}
