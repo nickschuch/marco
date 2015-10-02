@@ -9,7 +9,7 @@ An API driver load balancer for modern day application infrastructure.
 
 **Balancer**
 
-* Round - We are using https://github.com/mailgun/oxy under the hood for Round Robin balancing.
+* Roundrobin - We are using https://github.com/mailgun/oxy under the hood for Round Robin balancing.
 
 **Drivers**
 
