@@ -3,6 +3,8 @@ Marco
 
 An API driver load balancer for modern day application infrastructure.
 
+![Diagram](/docs/diagram.png "Diagram")
+
 ### Balancers and backends
 
 **Balancer**
