@@ -1,17 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"net/url"
 )
 
-func Check(e error) {
-	if e != nil {
-		Exit(e)
+func contains(s []*url.URL, e *url.URL) bool {
+	for _, a := range s {
+		if a.String() == e.String() {
+			return true
+		}
 	}
-}
-
-func Exit(e error) {
-	fmt.Println(e)
-	os.Exit(1)
+	return false
 }

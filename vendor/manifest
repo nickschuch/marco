@@ -56,6 +56,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/mailgun/multibuf",
+			"repository": "https://github.com/mailgun/multibuf",
+			"revision": "565402cd71fbd9c12aa7e295324ea357e970a61e",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/mailgun/oxy/forward",
 			"repository": "https://github.com/mailgun/oxy",
 			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
@@ -70,11 +76,25 @@
 			"path": "/memmetrics"
 		},
 		{
-			"importpath": "github.com/mailgun/oxy/roundrobin",
-			"repository": "https://github.com/mailgun/oxy",
+			"importpath": "github.com/nickschuch/oxy/roundrobin",
+			"repository": "https://github.com/nickschuch/oxy",
 			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
 			"branch": "master",
 			"path": "/roundrobin"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/stream",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/stream"
+		},
+		{
+			"importpath": "github.com/mailgun/oxy/trace",
+			"repository": "https://github.com/mailgun/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/trace"
 		},
 		{
 			"importpath": "github.com/mailgun/oxy/utils",
@@ -84,9 +104,21 @@
 			"path": "/utils"
 		},
 		{
+			"importpath": "github.com/mailgun/predicate",
+			"repository": "https://github.com/mailgun/predicate",
+			"revision": "cb0bff91a7ab7cf7571e661ff883fc997bc554a3",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/mailgun/timetools",
 			"repository": "https://github.com/mailgun/timetools",
 			"revision": "fd192d755b00c968d312d23f521eb0cdc6f66bd0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nickschuch/marco-lib",
+			"repository": "https://github.com/nickschuch/marco-lib",
+			"revision": "9b9bff0046fd345ab8e9e43f984635bc518f9a27",
 			"branch": "master"
 		},
 		{
