@@ -76,13 +76,6 @@
 			"path": "/memmetrics"
 		},
 		{
-			"importpath": "github.com/nickschuch/oxy/roundrobin",
-			"repository": "https://github.com/nickschuch/oxy",
-			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
-			"branch": "master",
-			"path": "/roundrobin"
-		},
-		{
 			"importpath": "github.com/mailgun/oxy/stream",
 			"repository": "https://github.com/mailgun/oxy",
 			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
@@ -120,6 +113,20 @@
 			"repository": "https://github.com/nickschuch/marco-lib",
 			"revision": "9b9bff0046fd345ab8e9e43f984635bc518f9a27",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/nickschuch/oxy/roundrobin",
+			"repository": "https://github.com/nickschuch/oxy",
+			"revision": "547c334d658398c05b346c0b79d8f47ba2e1473b",
+			"branch": "master",
+			"path": "/roundrobin"
+		},
+		{
+			"importpath": "github.com/stretchr/testify/assert",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "f3960ab1f9664ecc4e27c78af27cc9063d745a43",
+			"branch": "master",
+			"path": "/assert"
 		},
 		{
 			"importpath": "github.com/tobi/airbrake-go",

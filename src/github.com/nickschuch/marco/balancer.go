@@ -52,14 +52,14 @@ func (b *Balancer) Update(t string, w int, l []*url.URL) {
 
 	// Determine if new items are in the list, if not remove them.
 	for _, e := range existing {
-		if !contains(l, e) {
+		if !Contains(l, e) {
 			b.Handler.RemoveServer(e)
 		}
 	}
 
 	// Add the remaining items to the servers list.
 	for _, n := range l {
-		if !contains(existing, n) {
+		if !Contains(existing, n) {
 			b.Handler.UpsertServer(n, roundrobin.Weight(w), roundrobin.Tag(t))
 		}
 	}
